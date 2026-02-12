@@ -113,6 +113,17 @@ function App() {
                     </div>
                   ))}
                 </div>
+
+                {result.suggestions && (
+                  <div style={{ marginTop: 20, padding: 15, backgroundColor: "#f0f4f8", borderRadius: 8, border: "1px solid #d0dce6" }}>
+                    <h3 style={{ marginTop: 0, color: "#003049", marginBottom: 12 }}>📋 Resume Improvement Suggestions:</h3>
+                    <ul style={{ margin: 0, paddingLeft: 20, color: "#003049" }}>
+                      {result.suggestions.map((item, index) => (
+                        <li key={index} style={{ marginBottom: 8, lineHeight: 1.5 }}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </>
             )}
           </div>

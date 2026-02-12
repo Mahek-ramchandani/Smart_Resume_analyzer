@@ -18,6 +18,28 @@ def ats_score(text):
     score = (match_count / len(keywords)) * 100
     return round(score, 2)
 
+def generate_suggestions(text):
+    suggestions = []
+
+    text = text.lower()
+
+    if "project" not in text:
+        suggestions.append("Add academic or personal projects.")
+
+    if "internship" not in text:
+        suggestions.append("Mention internship or practical experience.")
+
+    if "github" not in text:
+        suggestions.append("Add your GitHub profile link.")
+
+    if "sql" not in text and "database" not in text:
+        suggestions.append("Add SQL and database related skills.")
+
+    if "communication" not in text:
+        suggestions.append("Mention communication and soft skills.")
+
+    return suggestions
+
 CORS(app)
 
 job_roles = {
@@ -58,25 +80,14 @@ def analyze():
     scores = analyze_resume(resume_text)
     best_role = max(scores, key=scores.get)
     ats = ats_score(resume_text)
+    suggestions = generate_suggestions(resume_text)
 
     return jsonify({
         "scores": scores,
         "best_role": best_role,
-        "ats_score": ats
+        "ats_score": ats,
+        "suggestions": suggestions
     })
-
-    def ats_score(resume_text):
-        important_keywords = "python java machine learning react sql html css javascript data analysis api cloud"
-    resume_words = resume_text.split()
-    keywords = important_keywords.split()
-
-    match_count = 0
-    for word in keywords:
-        if word in resume_words:
-            match_count += 1
-
-    score = (match_count / len(keywords)) * 100
-    return round(score, 2)
 
 if __name__ == '__main__':
     app.run(debug=True)
