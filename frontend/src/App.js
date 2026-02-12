@@ -86,6 +86,12 @@ function App() {
                     <div style={{fontSize:'1rem',color:'var(--navy)'}}>Best Role</div>
                     <div style={{marginTop:6,display:'flex',alignItems:'center',gap:10}}>
                       <div className="best-badge">{result.best_role}</div>
+                      <div style={{ marginTop: 10, fontSize: "1.1rem", fontWeight: 600 }}>
+                      ATS Resume Score: 
+                      <span style={{ color: "#2ecc71", marginLeft: 8 }}>
+                      {result.ats_score}%
+                      </span>
+                      </div>
                       <div style={{color:'rgba(0,48,73,0.7)',fontWeight:600}}>{" "}</div>
                     </div>
                   </div>

@@ -5,6 +5,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
+def ats_score(text):
+    keywords = [
+        "python", "java", "sql", "machine learning", "react", "flask",
+        "api", "html", "css", "javascript", "git", "github", "project",
+        "internship", "database", "cloud", "aws", "azure"
+    ]
+
+    text = text.lower()
+    match_count = sum(1 for word in keywords if word in text)
+
+    score = (match_count / len(keywords)) * 100
+    return round(score, 2)
+
 CORS(app)
 
 job_roles = {
@@ -44,11 +57,26 @@ def analyze():
 
     scores = analyze_resume(resume_text)
     best_role = max(scores, key=scores.get)
+    ats = ats_score(resume_text)
 
     return jsonify({
         "scores": scores,
-        "best_role": best_role
+        "best_role": best_role,
+        "ats_score": ats
     })
+
+    def ats_score(resume_text):
+        important_keywords = "python java machine learning react sql html css javascript data analysis api cloud"
+    resume_words = resume_text.split()
+    keywords = important_keywords.split()
+
+    match_count = 0
+    for word in keywords:
+        if word in resume_words:
+            match_count += 1
+
+    score = (match_count / len(keywords)) * 100
+    return round(score, 2)
 
 if __name__ == '__main__':
     app.run(debug=True)
