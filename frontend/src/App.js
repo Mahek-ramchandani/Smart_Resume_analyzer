@@ -4,6 +4,7 @@ import "./App.css";
 
 function App() {
   const [file, setFile] = useState(null);
+  const [jobDesc, setJobDesc] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
@@ -16,6 +17,7 @@ function App() {
 
     const formData = new FormData();
     formData.append("resume", file);
+    formData.append("job", jobDesc);
 
     setLoading(true);
     setResult(null);
@@ -68,6 +70,14 @@ function App() {
               />
             </div>
 
+            <textarea
+              placeholder="Paste Job Description here..."
+              rows="5"
+              style={{ width: "100%", marginTop: 10, padding: 10, borderRadius: 4, border: "1px solid #ccc", fontFamily: "Arial" }}
+              value={jobDesc}
+              onChange={(e) => setJobDesc(e.target.value)}
+            ></textarea>
+
             <button className="analyze-btn" onClick={analyzeResume} disabled={loading}>
               {loading ? "Analyzing..." : "Analyze Resume"}
             </button>
@@ -92,6 +102,16 @@ function App() {
                       {result.ats_score}%
                       </span>
                       </div>
+
+                      {result.job_match !== undefined && result.job_match > 0 && (
+                        <div style={{ marginTop: 10, fontSize: "1.1rem", fontWeight: 600 }}>
+                        Job Match Score: 
+                        <span style={{ color: "#3498db", marginLeft: 8 }}>
+                        {result.job_match}%
+                        </span>
+                        </div>
+                      )}
+
                       <div style={{color:'rgba(0,48,73,0.7)',fontWeight:600}}>{" "}</div>
                     </div>
                   </div>

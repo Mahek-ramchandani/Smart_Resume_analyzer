@@ -40,6 +40,14 @@ def generate_suggestions(text):
 
     return suggestions
 
+def job_match_score(resume_text, job_text):
+    if not job_text or job_text.strip() == "":
+        return 0
+    vectorizer = TfidfVectorizer()
+    vectors = vectorizer.fit_transform([resume_text, job_text])
+    similarity = cosine_similarity(vectors[0:1], vectors[1:2])
+    return round(similarity[0][0] * 100, 2)
+
 CORS(app)
 
 job_roles = {
@@ -75,18 +83,21 @@ def home():
 @app.route('/analyze', methods=['POST'])
 def analyze():
     file = request.files['resume']
+    job_desc = request.form.get('job', '')
     resume_text = extract_text(file)
 
     scores = analyze_resume(resume_text)
     best_role = max(scores, key=scores.get)
     ats = ats_score(resume_text)
     suggestions = generate_suggestions(resume_text)
+    jd_match = job_match_score(resume_text, job_desc)
 
     return jsonify({
         "scores": scores,
         "best_role": best_role,
         "ats_score": ats,
-        "suggestions": suggestions
+        "suggestions": suggestions,
+        "job_match": jd_match
     })
 
 if __name__ == '__main__':
