@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Smart Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h1>📊 Dashboard</h1>
+            <div>
+                <span class="user-info">👤 {{ user_name }}</span>
+                <a href="/logout" class="btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="stats-box">
+                <h3>📈 Your Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-value">{{ scores|length }}</span>
+                        <span class="stat-label">Resumes Analyzed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">{{ avg_score }}%</span>
+                        <span class="stat-label">Average Score</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analyze-box">
+                <h3>📄 Upload New Resume</h3>
+                <form id="dashboardAnalyzeForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label>Select Your Resume (PDF)</label>
+                        <input type="file" name="resume" accept=".pdf" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Job Description (Optional)</label>
+                        <textarea name="job_desc" placeholder="Paste job description here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-submit">Analyze</button>
+                </form>
+
+                <div id="dashboardResult" class="result-box" style="display:none;">
+                    <h4>✅ Analysis Complete</h4>
+                    <div class="score-box">
+                        <div class="score-item">
+                            <span class="score-label">ATS Score</span>
+                            <span class="score-value" id="dashboardAts">0</span>%
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">Job Match</span>
+                            <span class="score-value" id="dashboardJobMatch">0</span>%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-box">
+                <h3>📊 Score Progress</h3>
+                <canvas id="scoreChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="history-box">
+                <h3>📋 Analysis History</h3>
+                {% if scores %}
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Score %</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for score in scores %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td><strong>{{ score[0] }}%</strong></td>
+                                <td>Recently</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No analysis history yet. Upload your first resume above!</p>
+                {% endif %}
+            </div>
+
+            <div class="chatbot-section">
+                <h3>🤖 AI Resume Chatbot</h3>
+                <div class="chat-box">
+                    <div id="chatMessages" class="chat-messages"></div>
+                </div>
+                <input type="text" id="userMessage" placeholder="Ask about resume, interview, skills...">
+                <button onclick="sendMessage()" class="btn-chat">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard Analyze Form
+        document.getElementById('dashboardAnalyzeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('resume', e.target.querySelector('input[name="resume"]').files[0]);
+            formData.append('job_desc', e.target.querySelector('textarea[name="job_desc"]').value);
+            
+            try {
+                const response = await fetch('/dashboard-analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('dashboardAts').textContent = data.ATS_Score;
+                    document.getElementById('dashboardJobMatch').textContent = data.Job_Match;
+                    document.getElementById('dashboardResult').style.display = 'block';
+                    
+                    // Reload page to update history
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error analyzing resume: ' + error);
+            }
+        });
+
+        // Chart
+        const scores = [{{ scores|map(attribute=0)|join(', ') }}];
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: scores.length}, (_, i) => i + 1),
+                datasets: [{
+                    label: 'ATS Score Progress',
+                    data: scores,
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Chatbot
+        function sendMessage() {
+            const msgInput = document.getElementById('userMessage');
+            const message = msgInput.value.trim();
+            
+            if (!message) return;
+            
+            addMessageToChat('You', message, 'user');
+            msgInput.value = '';
+            
+            fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
+            })
+            .then(r => r.json())
+            .then(data => {
+                addMessageToChat('Bot', data.reply, 'bot');
+            });
+        }
+
+        function addMessageToChat(sender, message, type) {
+            const chatMessages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message ' + type;
+            msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        document.getElementById('userMessage').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

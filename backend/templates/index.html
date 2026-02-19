@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <h1>🚀 Smart Resume Analyzer</h1>
+            <div>
+                <a href="/login" class="btn">Login</a>
+                <a href="/signup" class="btn">Signup</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>📄 Upload Resume (No Login Required)</h2>
+            
+            <form id="analyzeForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Select Your Resume (PDF)</label>
+                    <input type="file" name="resume" id="resume" accept=".pdf" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Job Description (Optional)</label>
+                    <textarea name="job_desc" id="job_desc" placeholder="Paste job description here..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">Analyze Resume</button>
+            </form>
+
+            <div id="result" class="result-box" style="display:none;">
+                <h3>📊 Analysis Results</h3>
+                <div class="score-box">
+                    <div class="score-item">
+                        <span class="score-label">ATS Score</span>
+                        <span class="score-value" id="atsScore">0</span>%
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">Job Match</span>
+                        <span class="score-value" id="jobMatch">0</span>%
+                    </div>
+                </div>
+                
+                <div class="suggestions-box">
+                    <h4>💡 Suggestions to Improve:</h4>
+                    <ul id="suggestionsList"></ul>
+                </div>
+            </div>
+
+            <hr style="margin-top: 40px;">
+            
+            <div class="chatbot-section">
+                <h3>🤖 AI Resume Chatbot</h3>
+                <div class="chat-box">
+                    <div id="chatMessages" class="chat-messages"></div>
+                </div>
+                <input type="text" id="userMessage" placeholder="Ask about resume, interview, skills...">
+                <button onclick="sendMessage()" class="btn-chat">Send</button>
+            </div>
+
+            <p class="info-text">
+                ✨ <strong>Want more features?</strong> <a href="/login">Login</a> to access:
+                <br>✅ Dashboard with progress tracking
+                <br>✅ ATS Charts & Analytics
+                <br>✅ Resume History
+                <br>✅ Personalized AI Suggestions
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Form submission
+        document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('resume', document.getElementById('resume').files[0]);
+            formData.append('job_desc', document.getElementById('job_desc').value);
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('atsScore').textContent = data.ATS_Score;
+                    document.getElementById('jobMatch').textContent = data.Job_Match;
+                    
+                    const suggestionsList = document.getElementById('suggestionsList');
+                    suggestionsList.innerHTML = '';
+                    data.suggestions.forEach(suggestion => {
+                        const li = document.createElement('li');
+                        li.textContent = suggestion;
+                        suggestionsList.appendChild(li);
+                    });
+                    
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error analyzing resume: ' + error);
+            }
+        });
+
+        // Chatbot functionality
+        function sendMessage() {
+            const msgInput = document.getElementById('userMessage');
+            const message = msgInput.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat('You', message, 'user');
+            msgInput.value = '';
+            
+            // Send to backend
+            fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: message})
+            })
+            .then(r => r.json())
+            .then(data => {
+                addMessageToChat('Bot', data.reply, 'bot');
+            });
+        }
+
+        function addMessageToChat(sender, message, type) {
+            const chatMessages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message ' + type;
+            msgDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Allow Enter key to send message
+        document.getElementById('userMessage').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>
