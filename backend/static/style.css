@@ -7,8 +7,8 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
+    background: linear-gradient(135deg, #F5E6D3 0%, #F4D35E 100%);
+    color: #5C4A3A;
     min-height: 100vh;
 }
 
@@ -31,7 +31,7 @@ body {
 }
 
 .navbar h1 {
-    color: #667eea;
+    color: #8B6F47;
     font-size: 28px;
 }
 
@@ -51,7 +51,7 @@ body {
 /* Buttons */
 .btn, .btn-submit, .btn-chat {
     padding: 10px 20px;
-    background: #667eea;
+    background: #A0826D;
     color: white;
     border: none;
     border-radius: 5px;
@@ -62,9 +62,9 @@ body {
 }
 
 .btn:hover, .btn-submit:hover, .btn-chat:hover {
-    background: #764ba2;
+    background: #8B6F47;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(160, 130, 109, 0.4);
 }
 
 .btn-submit {
@@ -87,12 +87,12 @@ body {
 }
 
 .content h2, .content h3 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 20px;
 }
 
 .dashboard-content h3 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 20px;
     margin-top: 30px;
 }
@@ -123,8 +123,8 @@ body {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #A0826D;
+    box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.1);
 }
 
 .form-group textarea {
@@ -173,7 +173,7 @@ body {
 .score-value {
     display: block;
     font-size: 36px;
-    color: #667eea;
+    color: #A0826D;
     font-weight: bold;
 }
 
@@ -185,7 +185,7 @@ body {
 }
 
 .suggestions-box h4 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 10px;
 }
 
@@ -211,7 +211,7 @@ body {
 }
 
 .chatbot-section h3 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 15px;
 }
 
@@ -239,7 +239,7 @@ body {
 }
 
 .chat-message.user {
-    background: #667eea;
+    background: #A0826D;
     color: white;
     align-self: flex-end;
     margin-left: auto;
@@ -270,7 +270,7 @@ body {
 }
 
 .auth-box h2 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 30px;
     text-align: center;
 }
@@ -281,7 +281,7 @@ body {
 }
 
 .auth-link a {
-    color: #667eea;
+    color: #A0826D;
     text-decoration: none;
     font-weight: 600;
 }
@@ -292,7 +292,7 @@ body {
 
 /* Dashboard Specific */
 .stats-box {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #A0826D 0%, #8B6F47 100%);
     color: white;
     padding: 30px;
     border-radius: 10px;
@@ -338,7 +338,7 @@ body {
 }
 
 .analyze-box h3 {
-    color: #667eea;
+    color: #8B6F47;
 }
 
 .charts-box {
@@ -356,7 +356,7 @@ body {
 }
 
 .history-box h3 {
-    color: #667eea;
+    color: #8B6F47;
     margin-bottom: 15px;
 }
 
@@ -366,7 +366,7 @@ body {
 }
 
 .history-table thead {
-    background: #667eea;
+    background: #A0826D;
     color: white;
 }
 
@@ -391,7 +391,7 @@ body {
 }
 
 .info-text a {
-    color: #667eea;
+    color: #A0826D;
     text-decoration: none;
     font-weight: 600;
 }
